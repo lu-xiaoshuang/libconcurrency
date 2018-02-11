@@ -1,0 +1,100 @@
+#
+# Copyright (C) 2018 Xiaoshuang LU
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# 3. Neither the name of the copyright holder nor the names of its contributors
+#    may be used to endorse or promote products derived from this software
+#    without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+
+CROSS_COMPILE =
+
+# 32-bit
+# 64-bit
+WORD_SIZE = 64
+
+INSTALL_PREFIX =
+
+ifeq ("$(origin TOOL)", "command line")
+    COMPILER_PROVIDER = $(TOOL)
+endif
+ifndef COMPILER_PROVIDER
+    COMPILER_PROVIDER = gnu
+endif
+
+ifeq ("$(origin TOOL)", "command line")
+    COMPILER_PROVIDER = $(TOOL)
+endif
+ifndef COMPILER_PROVIDER
+    COMPILER_PROVIDER = gnu
+endif
+
+CP = cp -f
+
+MV = mv -f
+
+RM = rm -rf
+
+MAKE = make
+MAKE_FLAGS += -rR --no-print-directory
+
+INCLUDE_PATH_FLAGS +=
+LIBRARY_PATH_FLAGS +=
+
+# for gnu
+ifeq ($(COMPILER_PROVIDER),gnu)
+
+    OPTIMIZE_FLAGS += -O3 -fomit-frame-pointer
+    DEBUG_FLAGS += -g
+
+    CC = $(CROSS_COMPILE)gcc
+    CC_FLAGS += -std=c17 -pedantic -Wall -Wextra -Winline -fPIC -fno-builtin -m$(WORD_SIZE) $(OPTIMIZE_FLAGS) $(DEBUG_FLAGS)
+
+    CXX = $(CROSS_COMPILE)g++
+    CXX_FLAGS += -std=c++17 -pedantic -Wall -Wextra -Winline -fPIC -fno-builtin -m$(WORD_SIZE) $(OPTIMIZE_FLAGS) $(DEBUG_FLAGS)
+
+    AS =
+    AS_FLAGS +=
+
+    STATIC_LIBRARY_GENERATOR = $(CROSS_COMPILE)ar rcs
+
+    SHARED_LIBRARY_GENERATOR = $(CC) -shared
+
+endif
+
+LD = $(CROSS_COMPILE)ld
+LD_FLAGS +=
+
+NM = $(CROSS_COMPILE)nm
+NM_FLAGS +=
+
+STRIP = $(CROSS_COMPILE)strip
+STRIP_FLAGS += -R .comment -R .note --strip-debug -X
+
+OBJCOPY = $(CROSS_COMPILE)objcopy
+OBJCOPY_FLAGS +=
+
+OBJDUMP = $(CROSS_COMPILE)objdump
+OBJDUMP_FLAGS +=
